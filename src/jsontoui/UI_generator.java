@@ -5,11 +5,13 @@
  */
 package jsontoui;
 
+import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,7 +22,7 @@ import org.json.JSONObject;
  */
 public class UI_generator extends JFrame {
 
-    public UI_generator(String JSON, JFrame jf, HashMap<String, String> data) {
+    public UI_generator(String JSON, HashMap<String, String> data) {
         JSONObject obj = new JSONObject(JSON);
         JSONArray arr = obj.getJSONArray("UI");
         int width = obj.getInt("width") + 40;
@@ -39,19 +41,26 @@ public class UI_generator extends JFrame {
             int uheight = arr.getJSONObject(i).getInt("height");
             if (type_ui.toLowerCase().equals("lable")) {
                 String text = arr.getJSONObject(i).getString("text");
-                text = replace_paras(data,text);
+                text = replace_paras(data, text);
                 JLabel jl = new JLabel(text);
                 getContentPane().add(jl);
                 jl.setBounds(x, y, uwidth, uheight);
             } else if (type_ui.toLowerCase().equals("button")) {
                 String text = arr.getJSONObject(i).getString("text");
-                text = replace_paras(data,text);
+                String onclick = arr.getJSONObject(i).getString("onclick");
+                text = replace_paras(data, text);
                 JButton jl = new JButton(text);
                 getContentPane().add(jl);
+                jl.addActionListener(new onclick(onclick) {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        onclick(script);
+                    }
+                });
                 jl.setBounds(x, y, uwidth, uheight);
             } else if (type_ui.toLowerCase().equals("edittext")) {
                 String text = arr.getJSONObject(i).getString("text");
-                text = replace_paras(data,text);
+                text = replace_paras(data, text);
                 JTextField jt = new JTextField(text);
                 getContentPane().add(jt);
                 jt.setBounds(x, y, uwidth, uheight);
@@ -70,9 +79,39 @@ public class UI_generator extends JFrame {
         for (Map.Entry<String, String> e : data.entrySet()) {
             String key = e.getKey();
             String value = e.getValue();
-            s = s.replaceAll("@"+key, value);
+            s = s.replaceAll("@" + key, value);
         }
         return s;
+    }
+
+    void onclick(String scripts) {
+        String script_lines[] = scripts.split("\n");
+        for (String script : script_lines) {
+            String command = script.split("=")[0];
+            if (script.split("=").length > 1) {
+                String data = script.split("=")[1];
+                switch (command.toLowerCase()) {
+                    case "alert":
+                        String atribs[] = data.split(",");
+                        if (atribs.length > 1) {
+                            switch (atribs[0].toLowerCase()) {
+                                case "error":
+                                    JOptionPane.showMessageDialog(this, atribs[2], atribs[1],JOptionPane.ERROR_MESSAGE);
+                                    break;
+                                case "warn":
+                                    JOptionPane.showMessageDialog(this, atribs[2], atribs[1],JOptionPane.WARNING_MESSAGE);
+                                    break;
+                                case "info":
+                                    JOptionPane.showMessageDialog(this, atribs[2], atribs[1],JOptionPane.INFORMATION_MESSAGE);
+                                    break;
+                            }
+                        }else{
+                            JOptionPane.showMessageDialog(this, data);
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     public static void main(String args[]) {
@@ -96,11 +135,12 @@ public class UI_generator extends JFrame {
                 + "      \"width\": \"80\",\n"
                 + "      \"height\": \"30\",\n"
                 + "      \"type\": \"button\",\n"
+                + "      \"onclick\": \"alert=heyalert=new;\",\n"
                 + "      \"text\": \"loltest\"\n"
                 + "    }\n"
                 + "  ]\n"
                 + "}";
 
-        UI_generator ui = new UI_generator(json, new JFrame(), null);
+        UI_generator ui = new UI_generator(json, null);
     }
 }
