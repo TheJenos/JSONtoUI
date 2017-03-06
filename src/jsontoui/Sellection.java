@@ -20,10 +20,12 @@ public class Sellection<T> {
 
     public Sellection(T t) {
         this.t = t;
-        if (t instanceof JLabel) {
-            this.type = "Lable";
+        if (t instanceof SimpleImageView) {
+            this.type = "Image";
         } else if (t instanceof JButton) {
             this.type = "Button";
+        } else if (t instanceof JLabel) {
+            this.type = "Lable";
         } else if (t instanceof JTextField) {
             this.type = "EditText";
         }
