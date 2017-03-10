@@ -8,6 +8,7 @@ package jsontoui;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import org.json.JSONObject;
 
 /**
  *
@@ -17,6 +18,7 @@ public class Sellection<T> {
 
     private T t;
     private String type;
+    private JSONObject data;
 
     public Sellection(T t) {
         this.t = t;
@@ -31,6 +33,16 @@ public class Sellection<T> {
         }
     }
 
+    public void setData(JSONObject data) {
+        this.data = data;
+    }
+
+    
+    public JSONObject getData() {
+        return data;
+    }
+
+    
     public T getComponent() {
         return t;
     }

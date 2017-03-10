@@ -5,6 +5,7 @@
  */
 package jsontoui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -48,33 +49,40 @@ public class UI_generator extends JFrame {
         }
         obj = new JSONObject(JSON);
         JSONArray arr = obj.getJSONArray("UI");
-        int width = obj.getInt("width") + 15;
-        int height = obj.getInt("height") + 25;
+        int width = obj.getInt("width") + 0;
+        int height = obj.getInt("height") + 0;
         boolean packed = obj.getBoolean("packed");
         String caption = obj.getString("text");
         setTitle(caption);
-        setSize(width, height);
+        setSize(width + 16, height + 39);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(null);
         getContentPane().add(jp);
         jp.setBounds(0, 0, width, height);
+        jp.setOpaque(true);
+        jp.setBackground(Color.WHITE);
         addComponentListener(new ComponentListener() {
 
             @Override
             public void componentResized(ComponentEvent e) {
                 resizeall();
+                //System.out.println(getWidth());
+                //System.out.println(getHeight());
             }
 
             @Override
             public void componentMoved(ComponentEvent e) {
+                resizeall();
             }
 
             @Override
             public void componentShown(ComponentEvent e) {
+                resizeall();
             }
 
             @Override
             public void componentHidden(ComponentEvent e) {
+                resizeall();
             }
 
         });
@@ -85,6 +93,7 @@ public class UI_generator extends JFrame {
             int z = arr.getJSONObject(i).getInt("z");
             int uwidth = arr.getJSONObject(i).getInt("width");
             int uheight = arr.getJSONObject(i).getInt("height");
+            JSONObject cdata = arr.getJSONObject(i).getJSONObject("data");
             if (type_ui.toLowerCase().equals("lable")) {
                 String text = arr.getJSONObject(i).getString("text");
                 text = replace_paras(data, text);
@@ -97,14 +106,13 @@ public class UI_generator extends JFrame {
                 jl.setSize(uwidth, uheight);
             } else if (type_ui.toLowerCase().equals("button")) {
                 String text = arr.getJSONObject(i).getString("text");
-                String onclick = arr.getJSONObject(i).getString("onclick");
                 text = replace_paras(data, text);
                 JButton jl = new JButton(text);
                 jl.setBounds(x, y, uwidth, uheight);
                 jp.add(jl);
                 //jp.setComponentZOrder(jl, z);
                 Zindex.put(jl, arr.getJSONObject(i));
-                jl.addActionListener(new onclick(onclick) {
+                jl.addActionListener(new onclick(cdata.getString("onclick")) {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         onclick(script);
@@ -143,6 +151,7 @@ public class UI_generator extends JFrame {
         if (packed) {
             pack();
         }
+        //pack();
         setVisible(true);
         //setIndex();
     }
@@ -161,24 +170,39 @@ public class UI_generator extends JFrame {
         }
     };
 
-    void resizeall(){
-        int width = obj.getInt("width") + 15;
-        int height = obj.getInt("height") + 25;
-        int rwidth = getWidth() + 15;
-        int rheight = getHeight() + 26;
+    void resizeall() {
+        int width = obj.getInt("width");
+        int height = obj.getInt("height");
+        int rwidth = jp.getWidth();
+        int rheight = jp.getHeight();
         Component all[] = jp.getComponents();
         for (Component component : all) {
-           JSONObject cpm = Zindex.get(component);
-           int newx = (cpm.getInt("x")*rwidth)/width;
-           int newy = (cpm.getInt("y")*rheight)/height;
-           int newwidth = (cpm.getInt("width")*rwidth)/width;
-           int newheight = (cpm.getInt("width")*rheight)/height;
-           component.setLocation(newx, newy);
-           component.setSize(newwidth, newheight);
+            JSONObject cpm = Zindex.get(component);
+            Double oldwidthgap = width - cpm.getDouble("width") - cpm.getDouble("x");
+            Double newwidth = rwidth - oldwidthgap - cpm.getDouble("x");
+            Double oldheightgap = height - cpm.getDouble("height") - cpm.getDouble("y");
+            Double newheight = rheight - oldheightgap - cpm.getDouble("y");
+            Double rightsidegap = width - cpm.getDouble("width") - cpm.getDouble("x");
+            Double leftsidegap = cpm.getDouble("x");
+            Double topsidegap = cpm.getDouble("y");
+            Double bottomsidegap = height - cpm.getDouble("height") - cpm.getDouble("y");
+            if (!cpm.getJSONObject("data").getBoolean("resize")) {
+                if (leftsidegap > rightsidegap) {
+                    component.setLocation((rwidth - width) + cpm.getInt("x"), component.getY());
+                }
+                if (topsidegap > bottomsidegap) {
+                    component.setLocation(component.getX(),(rheight - height) + cpm.getInt("y"));
+                }
+                
+            }
+            if (cpm.getJSONObject("data").getBoolean("resize")) {
+                component.setSize(newwidth.intValue(), newheight.intValue());
+            }
+            jp.setComponentZOrder(component, cpm.getInt("z"));
         }
-        jp.setBounds(0,0,getWidth()+15, getHeight()+25);
+        jp.setBounds(0, 0, getWidth() - 16, getHeight() - 39);
     }
-    
+
     void setIndex() {
         for (Map.Entry<Component, JSONObject> e : Zindex.entrySet()) {
             Component key = e.getKey();
@@ -240,7 +264,7 @@ public class UI_generator extends JFrame {
     }
 
     public static void main(String args[]) {
-        String json = "{\"text\":\"Testing\",\"height\":458,\"packed\":false,\"width\":433,\"UI\":[{\"height\":122,\"width\":141,\"path\":\"C:\\\\Users\\\\Thanura\\\\Documents\\\\12038711_937872686274051_6084992746435062302_o.jpg\",\"onclick\":\"\",\"type\":\"Image\",\"z\":0,\"y\":20,\"x\":279},{\"height\":456,\"width\":433,\"path\":\"C:\\\\Users\\\\Thanura\\\\Documents\\\\12038711_937872686274051_6084992746435062302_o.jpg\",\"onclick\":\"\",\"type\":\"Image\",\"z\":1,\"y\":2,\"x\":0}]}";
+        String json = "{\"text\":\"Testing\",\"height\":492,\"packed\":false,\"width\":457,\"UI\":[{\"text\":\"@name\",\"height\":22,\"width\":327,\"data\":{\"onclick\":\"\",\"resize\":true},\"type\":\"EditText\",\"z\":0,\"y\":10,\"x\":8},{\"text\":\"hey\",\"height\":80,\"width\":111,\"data\":{\"onclick\":\"\",\"resize\":false},\"type\":\"Button\",\"z\":1,\"y\":5,\"x\":341}]}";
         UI_generator ui = new UI_generator(json, null);
     }
 }

@@ -35,16 +35,16 @@ import javax.swing.border.StrokeBorder;
  * @author Thanura
  */
 public class SimpleImageView extends JLabel {
-    
+
     private BufferedImage target;
-    
+
     private File ImageFile;
     private int oldw, oldh;
-    
+
     public File getImageFile() {
         return ImageFile;
     }
-    
+
     private Runnable loadimge = new Runnable() {
         @Override
         public void run() {
@@ -67,10 +67,15 @@ public class SimpleImageView extends JLabel {
                 while (true) {
                     synchronized (this) {
                         if (target != null) {
+                            if (oldh == getHeight() && oldw == getWidth()) {
+                                continue;
+                            }
+                            oldh = getHeight();
+                            oldw = getWidth();
                             setIcon(new ImageIcon(target.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH)));
                             setText(null);
                         }
-                        Thread.sleep(1);
+                        Thread.sleep(1000);
                     }
                 }
             } catch (Exception e) {
@@ -78,21 +83,21 @@ public class SimpleImageView extends JLabel {
             }
         }
     };
-    
+
     public SimpleImageView() {
         setOpaque(true);
         setHorizontalAlignment(CENTER);
         setBackground(Color.WHITE);
         setText("No Image");
     }
-    
+
     public void loadImage(final File f) {
         this.ImageFile = f;
         setIcon(null);
         setText("Loading...");
         new Thread(loadimge).start();
     }
-    
+
     public void loadImageNOThread(final File f) {
         this.ImageFile = f;
         setIcon(null);
@@ -106,19 +111,29 @@ public class SimpleImageView extends JLabel {
             System.out.println(f.getAbsolutePath());
             e.printStackTrace();
         }
-        new Thread(resize).start();
+        //new Thread(resize).start();
     }
-    
+
     @Override
     public void resize(int width, int height) {
         super.resize(width, height); //To change body of generated methods, choose Tools | Templates.
         //System.out.println(target);
-
+        synchronized (this) {
+            if (target != null) {
+                if (oldh == getHeight() && oldw == getWidth()) {
+                    return;
+                }
+                oldh = getHeight();
+                oldw = getWidth();
+                setIcon(new ImageIcon(target.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH)));
+                setText(null);
+            }
+        }
     }
-    
+
     public void clear() {
         setIcon(null);
         setText("No Image");
     }
-    
+
 }
