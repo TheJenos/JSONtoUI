@@ -7,7 +7,9 @@ package jsontoui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -15,8 +17,12 @@ import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -67,7 +73,10 @@ public class UIeditor extends javax.swing.JFrame {
                 break;
             case "EditText":
                 jTextArea2.setText(((JTextField) sellected.getComponent()).getText());
-                ((JTextField) sellected.getComponent()).setBorder(new LineBorder(Color.BLACK, 1));
+                if (!(((JTextField) sellected.getComponent()).getBorder() instanceof CompoundBorder)) {
+                    CompoundBorder cb = new CompoundBorder(new LineBorder(Color.BLACK, 1), ((JTextField) sellected.getComponent()).getBorder());
+                    ((JTextField) sellected.getComponent()).setBorder(cb);
+                }
                 break;
             case "Image":
                 jTextArea2.setText(((SimpleImageView) sellected.getComponent()).getImageFile().getAbsolutePath());
@@ -75,7 +84,7 @@ public class UIeditor extends javax.swing.JFrame {
                 break;
         }
         try {
-            jSlider5.setMaximum(jPanel4.getComponentCount()-1);
+            jSlider5.setMaximum(jPanel4.getComponentCount() - 1);
             jSlider5.setValue(jPanel4.getComponentZOrder(c));
             jLabel3.setText("<html>Z-index<br>" + jPanel4.getComponentZOrder(c));
             jLabel4.setText("<html>X<br>" + c.getX());
@@ -160,7 +169,7 @@ public class UIeditor extends javax.swing.JFrame {
 
         jSpinner1 = new javax.swing.JSpinner();
         jPanel1 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JLayeredPane();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
@@ -170,6 +179,8 @@ public class UIeditor extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -189,6 +200,7 @@ public class UIeditor extends javax.swing.JFrame {
         jTextArea3 = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
         jSlider5 = new javax.swing.JSlider();
+        jButton6 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("UI Editor");
@@ -202,27 +214,38 @@ public class UIeditor extends javax.swing.JFrame {
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.setOpaque(true);
         jPanel4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jPanel4MouseClicked(evt);
             }
         });
-        jPanel4.setLayout(null);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel4)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel4)
                 .addContainerGap())
         );
 
@@ -289,21 +312,43 @@ public class UIeditor extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
+        jButton4.setText("Save JSON");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText("Load JSON");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 257, Short.MAX_VALUE)
+                        .addComponent(jButton5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton4)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton4)
+                    .addComponent(jButton5)))
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Properties"));
@@ -443,6 +488,13 @@ public class UIeditor extends javax.swing.JFrame {
             }
         });
 
+        jButton6.setText("Add Path");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -450,7 +502,6 @@ public class UIeditor extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane3)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -470,18 +521,21 @@ public class UIeditor extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSlider5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                    .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jLabel10))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                .addComponent(jSlider2, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(jPanel5Layout.createSequentialGroup()
+                            .addComponent(jLabel10)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton6)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -497,18 +551,18 @@ public class UIeditor extends javax.swing.JFrame {
                     .addComponent(jSlider4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(1, 1, 1)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addGap(0, 0, 0)
-                        .addComponent(jSlider5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jSlider5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel10)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel10)
+                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -550,8 +604,8 @@ public class UIeditor extends javax.swing.JFrame {
                         .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -644,10 +698,6 @@ public class UIeditor extends javax.swing.JFrame {
         update_component();
     }//GEN-LAST:event_jTextArea2KeyReleased
 
-    private void jPanel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel4MouseClicked
-        clear_sellection();
-    }//GEN-LAST:event_jPanel4MouseClicked
-
     private void jSlider4MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider4MouseEntered
         js4 = true;
     }//GEN-LAST:event_jSlider4MouseEntered
@@ -697,10 +747,7 @@ public class UIeditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        HashMap hm = new HashMap();
-        hm.put("data1", "lol");
-        UI_generator ui = new UI_generator(jTextArea1.getText(), hm);
-        ui.show();
+        UI_generator ui = new UI_generator(jTextArea1.getText(), null);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jTextArea3KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea3KeyReleased
@@ -715,6 +762,8 @@ public class UIeditor extends javax.swing.JFrame {
         String selected_type = jComboBox1.getSelectedItem().toString();
         if (selected_type.equals("Image")) {
             JFileChooser fc = new JFileChooser();
+            fc.setAcceptAllFileFilterUsed(false);
+            fc.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "jpge"));
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 jTextField1.setText(fc.getSelectedFile().getAbsolutePath());
@@ -737,6 +786,49 @@ public class UIeditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jSlider5StateChanged
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        JFileChooser fc = new JFileChooser();
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("JSON Files", "JSON", "txt", "json"));
+        int returnVal = fc.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            JSONUI_File jf = new JSONUI_File(fc.getSelectedFile().getAbsolutePath());
+            jTextArea1.setText(jf.getJSON());
+            loadFromJSON(jf.getJSON(), jPanel4);
+            clear_sellection();
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        JFileChooser fc = new JFileChooser();
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("JSON Files", "JSON", "txt", "json"));
+        int returnVal = fc.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            String name = fc.getSelectedFile().getAbsolutePath();
+            String realname = (name.substring(name.length() - 4, name.length()).toLowerCase().equals("json")) ? name : fc.getSelectedFile().getAbsolutePath() + ".json";
+            JSONUI_File jf = new JSONUI_File(realname);
+            jf.setJSON(jTextArea1.getText());
+            jf.saveFile();
+            JOptionPane.showMessageDialog(this, "<html>File Saved<br>" + jf.getJSON_File().getAbsolutePath());
+            clear_sellection();
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        JFileChooser fc = new JFileChooser();
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.addChoosableFileFilter(new FileNameExtensionFilter("JSON Files", "JSON", "txt", "json"));
+        int returnVal = fc.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            jTextArea3.setText(jTextArea3.getText() + fc.getSelectedFile().getAbsolutePath());
+        };
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jPanel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel4MouseClicked
+        clear_sellection();
+    }//GEN-LAST:event_jPanel4MouseClicked
+
     void clear_sellection() {
         Component[] list = jPanel4.getComponents();
         for (Component component : list) {
@@ -748,7 +840,9 @@ public class UIeditor extends javax.swing.JFrame {
                 jl.setBorder(null);
             } else if (component instanceof JTextField) {
                 JTextField jb = (JTextField) component;
-                jb.setBorder(null);
+                if (jb.getBorder() instanceof CompoundBorder) {
+                    jb.setBorder(((CompoundBorder) jb.getBorder()).getInsideBorder());
+                }
             } else if (component instanceof JButton) {
                 JButton jb = (JButton) component;
                 jb.setBorder(null);
@@ -780,7 +874,9 @@ public class UIeditor extends javax.swing.JFrame {
                     break;
                 case "Image":
                     File f = ((SimpleImageView) sellected.getComponent()).getImageFile();
-                    if(jTextArea2.getText().equals(f.getAbsolutePath()))break;
+                    if (jTextArea2.getText().equals(f.getAbsolutePath())) {
+                        break;
+                    }
                     System.out.println("Form Here");
                     ((SimpleImageView) sellected.getComponent()).loadImage(new File(jTextArea2.getText()));
                     break;
@@ -795,6 +891,63 @@ public class UIeditor extends javax.swing.JFrame {
         } catch (NullPointerException e) {
         }
         JSONcreate();
+    }
+
+    void loadFromJSON(String JSON, Container cnt) {
+        cnt.removeAll();
+        cnt.repaint();
+        JSONObject obj = new JSONObject(JSON);
+        JSONArray arr = obj.getJSONArray("UI");
+        for (int i = 0; i < arr.length(); i++) {
+            String type_ui = arr.getJSONObject(i).getString("type");
+            int x = arr.getJSONObject(i).getInt("x");
+            int y = arr.getJSONObject(i).getInt("y");
+            int z = arr.getJSONObject(i).getInt("z");
+            int uwidth = arr.getJSONObject(i).getInt("width");
+            int uheight = arr.getJSONObject(i).getInt("height");
+            if (type_ui.toLowerCase().equals("lable")) {
+                String text = arr.getJSONObject(i).getString("text");
+                JLabel jl = new JLabel(text);
+                cnt.add(jl);
+                cnt.setComponentZOrder(jl, z);
+                jl.setBounds(x, y, uwidth, uheight);
+                new ComponentMover().registerComponent(jl);
+                jl.setPreferredSize(new Dimension(uwidth, uheight));
+                jl.addMouseListener(click);
+            } else if (type_ui.toLowerCase().equals("button")) {
+                String text = arr.getJSONObject(i).getString("text");
+                String onclick = arr.getJSONObject(i).getString("onclick");
+                JButton jl = new JButton(text);
+                jl.setName(onclick);
+                cnt.add(jl);
+                cnt.setComponentZOrder(jl, z);
+                jl.setBounds(x, y, uwidth, uheight);
+                new ComponentMover().registerComponent(jl);
+                jl.setPreferredSize(new Dimension(uwidth, uheight));
+                jl.addMouseListener(click);
+            } else if (type_ui.toLowerCase().equals("edittext")) {
+                String text = arr.getJSONObject(i).getString("text");
+                JTextField jt = new JTextField(text);
+                cnt.add(jt);
+                cnt.setComponentZOrder(jt, z);
+                jt.setBounds(x, y, uwidth, uheight);
+                new ComponentMover().registerComponent(jt);
+                jt.setPreferredSize(new Dimension(uwidth, uheight));
+                jt.addMouseListener(click);
+            } else if (type_ui.toLowerCase().equals("image")) {
+                String text = arr.getJSONObject(i).getString("path");
+                SimpleImageView img = new SimpleImageView();
+                cnt.add(img);
+                img.setBounds(x, y, uwidth, uheight);
+                cnt.setComponentZOrder(img, z);
+                new ComponentMover().registerComponent(img);
+                img.setPreferredSize(new Dimension(uwidth, uheight));
+                img.loadImageNOThread(new File(text));
+                img.addMouseListener(click);
+            }
+            cnt.revalidate();
+            cnt.repaint();
+        }
     }
 
     /**
@@ -836,6 +989,9 @@ public class UIeditor extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -849,7 +1005,7 @@ public class UIeditor extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
+    private javax.swing.JLayeredPane jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

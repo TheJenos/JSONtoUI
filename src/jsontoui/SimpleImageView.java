@@ -35,16 +35,16 @@ import javax.swing.border.StrokeBorder;
  * @author Thanura
  */
 public class SimpleImageView extends JLabel {
-
+    
     private BufferedImage target;
-
+    
     private File ImageFile;
     private int oldw, oldh;
-
+    
     public File getImageFile() {
         return ImageFile;
     }
-
+    
     private Runnable loadimge = new Runnable() {
         @Override
         public void run() {
@@ -60,21 +60,39 @@ public class SimpleImageView extends JLabel {
             }
         }
     };
-
+    private Runnable resize = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    synchronized (this) {
+                        if (target != null) {
+                            setIcon(new ImageIcon(target.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH)));
+                            setText(null);
+                        }
+                        Thread.sleep(1);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    
     public SimpleImageView() {
         setOpaque(true);
         setHorizontalAlignment(CENTER);
         setBackground(Color.WHITE);
         setText("No Image");
     }
-
+    
     public void loadImage(final File f) {
         this.ImageFile = f;
         setIcon(null);
         setText("Loading...");
         new Thread(loadimge).start();
     }
-
+    
     public void loadImageNOThread(final File f) {
         this.ImageFile = f;
         setIcon(null);
@@ -85,22 +103,22 @@ public class SimpleImageView extends JLabel {
             setIcon(new ImageIcon(img.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH)));
             setText(null);
         } catch (Exception e) {
+            System.out.println(f.getAbsolutePath());
             e.printStackTrace();
         }
+        new Thread(resize).start();
     }
-
+    
     @Override
     public void resize(int width, int height) {
         super.resize(width, height); //To change body of generated methods, choose Tools | Templates.
-        if (target != null) {
-            setIcon(new ImageIcon(target.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH)));
-            setText(null);
-        }
-    }
+        //System.out.println(target);
 
+    }
+    
     public void clear() {
         setIcon(null);
         setText("No Image");
     }
-
+    
 }
