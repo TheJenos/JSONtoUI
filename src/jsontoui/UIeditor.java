@@ -10,12 +10,17 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -47,6 +52,7 @@ public class UIeditor extends javax.swing.JFrame {
         public void mousePressed(MouseEvent me) {
             clear_sellection();
             sellected = new Sellection<Component>(me.getComponent());
+            me.getComponent().requestFocus();
             updatePorperties();
         }
 
@@ -60,6 +66,16 @@ public class UIeditor extends javax.swing.JFrame {
 
     public UIeditor() {
         initComponents();
+    }
+
+    public UIeditor(String path) {
+        initComponents();
+        jf = new JSONUI_File(path);
+        jTextArea1.setText(jf.getJSON());
+        setTitle("UI Editor - " + path);
+        loadFromJSON(jf.getJSON(), jPanel4);
+        clear_sellection();
+        this.show();
     }
 
     void updatePorperties() {
@@ -94,8 +110,8 @@ public class UIeditor extends javax.swing.JFrame {
             jSlider4.setValue((int) c.getY());
             jLabel5.setText("<html>Y<br>" + c.getY());
             sellected.setData(new JSONObject(c.getName()));
-            jTextArea3.setText(sellected.getData().isNull("onclick")?"":sellected.getData().getString("onclick"));
-            jCheckBox1.setSelected(sellected.getData().isNull("resize")?false:sellected.getData().getBoolean("resize"));
+            jTextArea3.setText(sellected.getData().isNull("onclick") ? "" : sellected.getData().getString("onclick"));
+            jCheckBox1.setSelected(sellected.getData().isNull("resize") ? false : sellected.getData().getBoolean("resize"));
             jLabel9.setText("<html>Width<br>" + c.getPreferredSize().getWidth());
             jSlider1.setValue((int) c.getPreferredSize().getWidth());
             jSlider2.setValue((int) c.getPreferredSize().getHeight());
@@ -112,6 +128,7 @@ public class UIeditor extends javax.swing.JFrame {
         jo.put("width", jPanel4.getWidth());
         jo.put("height", jPanel4.getHeight());
         jo.put("packed", false);
+        jo.put("Type", "UI");
         jo.put("text", "Testing");
         JSONArray ja = new JSONArray();
         for (Component component : list) {
@@ -143,6 +160,7 @@ public class UIeditor extends javax.swing.JFrame {
                 jo1.put("z", jPanel4.getComponentZOrder(jb));
                 jo1.put("width", jb.getWidth());
                 jo1.put("height", jb.getHeight());
+                String hex = "#" + Integer.toHexString(jb.getBackground().getRGB()).substring(2);
                 jo1.put("text", jb.getText());
                 jo1.put("data", new JSONObject(jb.getName()));
                 jo1.put("type", "Button");
@@ -160,7 +178,38 @@ public class UIeditor extends javax.swing.JFrame {
             ja.put(jo1);
         }
         jo.put("UI", ja);
-        jTextArea1.setText(jo.toString());
+        jTextArea1.setText(jo.toString(4));
+    }
+
+    KeyListener kl = new KeyListener() {
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                moveComponents(e.getComponent(), -1, 0);
+            } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                moveComponents(e.getComponent(), 1, 0);
+            } else if (e.getKeyCode() == KeyEvent.VK_UP) {
+                moveComponents(e.getComponent(), 0, -1);
+            } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                moveComponents(e.getComponent(), 0, 1);
+            }
+            updatePorperties();
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+    };
+
+    void moveComponents(Component c, int x, int y) {
+        c.setLocation(c.getX() + x, c.getY() + y);
     }
 
     /**
@@ -209,8 +258,8 @@ public class UIeditor extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jCheckBox1 = new javax.swing.JCheckBox();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("UI Editor");
+        setResizable(false);
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 formComponentResized(evt);
@@ -232,7 +281,7 @@ public class UIeditor extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 483, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -349,24 +398,25 @@ public class UIeditor extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(194, 194, 194)
+                .addComponent(jButton5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton4)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)))
+                .addComponent(jScrollPane1)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton4)
                     .addComponent(jButton5)
@@ -617,10 +667,10 @@ public class UIeditor extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -630,16 +680,14 @@ public class UIeditor extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -657,7 +705,9 @@ public class UIeditor extends javax.swing.JFrame {
             jl.setName(new JSONObject().toString());
             jl.setBounds(10, 10, 30, 30);
             jl.addMouseListener(click);
+            jl.setFocusable(true);
             new ComponentMover().registerComponent(jl);
+            jl.addKeyListener(kl);
             jPanel4.setComponentZOrder(jl, 0);
             jPanel4.revalidate();
         } else if (selected_type.equals("Button")) {
@@ -666,8 +716,11 @@ public class UIeditor extends javax.swing.JFrame {
             jTextField1.setText("");
             jPanel4.add(jb);
             jb.setName(new JSONObject().toString());
-            jb.setBounds(10, 10, 30, 30);
+            jb.setOpaque(true);
+            jb.setBounds(10, 10, 80, 50);
+            jb.setPreferredSize(new Dimension(80, 50));
             jb.addMouseListener(click);
+            jb.addKeyListener(kl);
             jPanel4.setComponentZOrder(jb, 0);
             new ComponentMover().registerComponent(jb);
             jPanel4.revalidate();
@@ -677,8 +730,10 @@ public class UIeditor extends javax.swing.JFrame {
             jTextField1.setText("");
             jPanel4.add(jt);
             jt.setName(new JSONObject().toString());
-            jt.setBounds(10, 10, 30, 30);
+            jt.setBounds(10, 10, 160, 80);
+            jt.setPreferredSize(new Dimension(160, 80));
             jt.addMouseListener(click);
+            jt.addKeyListener(kl);
             jPanel4.setComponentZOrder(jt, 0);
             new ComponentMover().registerComponent(jt);
             jPanel4.revalidate();
@@ -691,6 +746,7 @@ public class UIeditor extends javax.swing.JFrame {
             img.setBounds(10, 10, 30, 30);
             img.addMouseListener(click);
             img.setBorder(null);
+            img.addKeyListener(kl);
             jPanel4.setComponentZOrder(img, 0);
             new ComponentMover().registerComponent(img);
             jPanel4.revalidate();
@@ -861,6 +917,7 @@ public class UIeditor extends javax.swing.JFrame {
         int returnVal = fc.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             jTextArea3.setText(jTextArea3.getText() + fc.getSelectedFile().getAbsolutePath());
+            update_component();
         };
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -990,7 +1047,9 @@ public class UIeditor extends javax.swing.JFrame {
                 jl.addMouseListener(click);
             } else if (type_ui.toLowerCase().equals("button")) {
                 String text = arr.getJSONObject(i).getString("text");
-                JButton jl = new JButton(text);
+//                String color = arr.getJSONObject(i).getString("color");
+                JButton jl = new JButton();
+                jl.setText(text);
                 jl.setName(cdata.toString());
                 cnt.add(jl);
                 cnt.setComponentZOrder(jl, z);
@@ -1000,7 +1059,8 @@ public class UIeditor extends javax.swing.JFrame {
                 jl.addMouseListener(click);
             } else if (type_ui.toLowerCase().equals("edittext")) {
                 String text = arr.getJSONObject(i).getString("text");
-                JTextField jt = new JTextField(text);
+                JTextField jt = new JTextField();
+                jt.setText(text);
                 cnt.add(jt);
                 jt.setName(cdata.toString());
                 cnt.setComponentZOrder(jt, z);

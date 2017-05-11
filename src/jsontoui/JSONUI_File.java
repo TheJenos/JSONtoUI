@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import org.json.JSONObject;
 
 /**
  *
@@ -20,6 +21,7 @@ public class JSONUI_File {
 
     private String JSON = "";
     private File JSON_File;
+    private JSONObject JSON_Object = new JSONObject();
 
     public JSONUI_File() {
     }
@@ -27,11 +29,16 @@ public class JSONUI_File {
         JSON_File = new File(file);
         try {
             JSON = readFile(file);
+            JSON_Object = new JSONObject(JSON);
         } catch (Exception e) {
             //e.printStackTrace();
         }
     }
 
+    public JSONObject getJSON_Object() {
+        return JSON_Object;
+    }
+    
     public void setJSON(String JSON) {
         this.JSON = JSON;
     }

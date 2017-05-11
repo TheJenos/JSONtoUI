@@ -12,6 +12,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -43,6 +44,15 @@ public class UI_generator extends JFrame {
     Boolean update = true;
     JLayeredPane jp = new JLayeredPane();
 
+    class Ke extends KeyAdapter {
+
+        String ss = "";
+
+        public Ke(String ss) {
+            this.ss = ss;
+        }
+    }
+
     public UI_generator(String JSON, HashMap<String, String> data) {
         if (data != null) {
             this.paras = data;
@@ -66,8 +76,6 @@ public class UI_generator extends JFrame {
             @Override
             public void componentResized(ComponentEvent e) {
                 resizeall();
-                //System.out.println(getWidth());
-                //System.out.println(getHeight());
             }
 
             @Override
@@ -107,8 +115,10 @@ public class UI_generator extends JFrame {
             } else if (type_ui.toLowerCase().equals("button")) {
                 String text = arr.getJSONObject(i).getString("text");
                 text = replace_paras(data, text);
-                JButton jl = new JButton(text);
+                JButton jl = new JButton();
+                jl.setOpaque(true);
                 jl.setBounds(x, y, uwidth, uheight);
+                jl.setText(text);
                 jp.add(jl);
                 //jp.setComponentZOrder(jl, z);
                 Zindex.put(jl, arr.getJSONObject(i));
@@ -123,10 +133,10 @@ public class UI_generator extends JFrame {
             } else if (type_ui.toLowerCase().equals("edittext")) {
                 final String text = arr.getJSONObject(i).getString("text");
                 JTextField jt = new JTextField();
-                jt.addKeyListener(new java.awt.event.KeyAdapter() {
+                jt.addKeyListener(new Ke(text) {
                     public void keyReleased(java.awt.event.KeyEvent evt) {
                         JTextField jt = (JTextField) evt.getComponent();
-                        paras.put(text.substring(1), jt.getText());
+                        paras.put(ss.substring(1), jt.getText());
                     }
                 });
                 jp.add(jt);
@@ -151,20 +161,24 @@ public class UI_generator extends JFrame {
         if (packed) {
             pack();
         }
+
         //pack();
-        setVisible(true);
-        //setIndex();
+        setVisible(
+                true);
+        new Thread(Indexing).start();
     }
 
     private Runnable Indexing = new Runnable() {
         @Override
         public void run() {
             while (update) {
-                setIndex();
+                System.gc();
                 try {
                     Thread.sleep(1000);
+
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(UI_generator.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UI_generator.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -191,12 +205,16 @@ public class UI_generator extends JFrame {
                     component.setLocation((rwidth - width) + cpm.getInt("x"), component.getY());
                 }
                 if (topsidegap > bottomsidegap) {
-                    component.setLocation(component.getX(),(rheight - height) + cpm.getInt("y"));
+                    component.setLocation(component.getX(), (rheight - height) + cpm.getInt("y"));
                 }
-                
+
             }
             if (cpm.getJSONObject("data").getBoolean("resize")) {
-                component.setSize(newwidth.intValue(), newheight.intValue());
+                if (leftsidegap + rightsidegap > topsidegap + bottomsidegap) {
+                    component.setSize(component.getWidth(), newheight.intValue());
+                } else {
+                    component.setSize(newwidth.intValue(), component.getHeight());
+                }
             }
             jp.setComponentZOrder(component, cpm.getInt("z"));
         }
@@ -264,7 +282,7 @@ public class UI_generator extends JFrame {
     }
 
     public static void main(String args[]) {
-        String json = "{\"text\":\"Testing\",\"height\":492,\"packed\":false,\"width\":457,\"UI\":[{\"text\":\"@name\",\"height\":22,\"width\":327,\"data\":{\"onclick\":\"\",\"resize\":true},\"type\":\"EditText\",\"z\":0,\"y\":10,\"x\":8},{\"text\":\"hey\",\"height\":80,\"width\":111,\"data\":{\"onclick\":\"\",\"resize\":false},\"type\":\"Button\",\"z\":1,\"y\":5,\"x\":341}]}";
+        String json = "{\"text\":\"Testing\",\"height\":492,\"packed\":false,\"width\":457,\"UI\":[{\"text\":\"#ff0033,Close\",\"height\":50,\"width\":80,\"data\":{\"onclick\":\"close=this\",\"resize\":true},\"type\":\"Button\",\"z\":0,\"y\":442,\"x\":377},{\"text\":\"Hey,@name\",\"height\":76,\"width\":431,\"data\":{\"onclick\":\"\",\"resize\":false},\"type\":\"EditText\",\"z\":1,\"y\":7,\"x\":14}]}";
         UI_generator ui = new UI_generator(json, null);
     }
 }
