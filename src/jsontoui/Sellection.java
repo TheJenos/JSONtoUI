@@ -30,6 +30,8 @@ public class Sellection<T> {
             this.type = "Lable";
         } else if (t instanceof JTextField) {
             this.type = "EditText";
+        } else if (t instanceof SQL_Table) {
+            this.type = "SQL_Table";
         }
     }
 

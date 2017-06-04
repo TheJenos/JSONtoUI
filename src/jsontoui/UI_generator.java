@@ -5,29 +5,32 @@
  */
 package jsontoui;
 
+import Utils.Utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
-import java.awt.image.BufferedImage;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,10 +42,111 @@ public class UI_generator extends JFrame {
 
     HashMap<Component, JSONObject> Zindex = new HashMap<Component, JSONObject>();
     HashMap<String, String> paras = new HashMap<String, String>();
+    HashMap<String, String> oldparas = new HashMap<String, String>();
+
     JSONObject obj = new JSONObject();
+    JSONObject Config_obj;
+    Connection c = null;
+
+    @Override
+    public void dispose() {
+        binds.stop();
+        binds = null;
+        super.dispose(); //To change body of generated methods, choose Tools | Templates.
+    }
 
     Boolean update = true;
     JLayeredPane jp = new JLayeredPane();
+    Timer binds = new Timer(5, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            for (Map.Entry<String, String> entry : paras.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if (oldparas.get(key) == null || !oldparas.get(key).equals(value)) {
+                    oldparas.put(key, value);
+                    for (Map.Entry<Component, JSONObject> entry1 : Zindex.entrySet()) {
+                        Component key1 = entry1.getKey();
+                        JSONObject value1 = entry1.getValue();
+                        String type_ui = value1.getString("type");
+                        if (type_ui.toLowerCase().equals("lable") && isThere(value1.getString("text"), key)) {
+                            String text = value1.getString("text");
+                            text = replace_paras(paras, text);
+                            JLabel jl = (JLabel) key1;
+                            jl.setText(text);
+                        } else if (type_ui.toLowerCase().equals("button") && isThere(value1.getString("text"), key)) {
+                            String text = value1.getString("text");
+                            text = replace_paras(paras, text);
+                            JButton jl = (JButton) key1;
+                            jl.setText(text);
+                        } else if (type_ui.toLowerCase().equals("edittext") && isThere(value1.getString("text"), key)) {
+                            JTextField jl = (JTextField) key1;
+                            String text = value1.getString("text");
+                            text = replace_paras(paras, text);
+                            jl.setText(text);
+                        } else if (type_ui.toLowerCase().equals("image") && isThere(value1.getString("path"), key)) {
+                            SimpleImageView jl = (SimpleImageView) key1;
+                            String text = value1.getString("path");
+                            text = replace_paras(paras, text);
+                            jl.loadImageNOThread(new File(text));
+                        } else if (type_ui.toLowerCase().equals("sql_table") && (isThere(value1.getJSONObject("data").getString("lable"), key) || isThere(value1.getString("text"), key))) {
+                            String text = value1.getString("text");
+                            JSONObject cdata = value1.getJSONObject("data");
+                            String text2 = cdata.getString("lable");
+                            text = replace_paras(paras, text);
+                            text2 = replace_paras(paras, text2);
+                            SQL_Table jl = (SQL_Table) key1;
+                            jl.setSQL(text);
+                            jl.setLable(text2);
+                            jl.refreash();
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    public void Refreash() {
+        for (Map.Entry<Component, JSONObject> entry1 : Zindex.entrySet()) {
+            Component key1 = entry1.getKey();
+            JSONObject value1 = entry1.getValue();
+            String type_ui = value1.getString("type");
+            if (type_ui.toLowerCase().equals("image")) {
+                SimpleImageView jl = (SimpleImageView) key1;
+                String text = value1.getString("path");
+                text = replace_paras(paras, text);
+                jl.loadImageNOThread(new File(text));
+            } else if (type_ui.toLowerCase().equals("sql_table")) {
+                String text = value1.getString("text");
+                JSONObject cdata = value1.getJSONObject("data");
+                String text2 = cdata.getString("lable");
+                text = replace_paras(paras, text);
+                text2 = replace_paras(paras, text2);
+                SQL_Table jl = (SQL_Table) key1;
+                jl.setSQL(text);
+                jl.setLable(text2);
+                jl.refreash();
+            }
+        }
+    }
+
+    public boolean isThere(String s1, String s2) {
+        return !s1.replaceAll(s2, "").equals(s1);
+    }
+
+    private void clearit(String data) {
+        for (Map.Entry<Component, JSONObject> entry1 : Zindex.entrySet()) {
+            Component key1 = entry1.getKey();
+            JSONObject value1 = entry1.getValue();
+            String type_ui = value1.getString("type");
+            if (type_ui.toLowerCase().equals("edittext") && value1.getString("text").equals(data)) {
+                JTextField jl = (JTextField) key1;
+                jl.setText("");
+                System.out.println(paras);
+                paras.put(data.substring(1), "");
+            }
+        }
+    }
 
     class Ke extends KeyAdapter {
 
@@ -51,6 +155,29 @@ public class UI_generator extends JFrame {
         public Ke(String ss) {
             this.ss = ss;
         }
+    }
+
+    public void iud(String Sql) throws Exception {
+        if (c == null) {
+            connectToDataBase();
+        }
+        System.out.println(Sql);
+        c.createStatement().executeUpdate(Sql);
+    }
+
+    public Connection getConnection() {
+        try {
+            if (c == null) {
+                connectToDataBase();
+            }
+        } catch (Exception e) {
+        }
+        return c;
+    }
+
+    public void connectToDataBase() throws Exception {
+        Class.forName("com.mysql.jdbc.Driver");
+        c = DriverManager.getConnection("jdbc:mysql://" + Config_obj.get("Host").toString() + ":" + Config_obj.get("Port").toString() + "/" + Config_obj.get("DataBase Name").toString() + "?zeroDateTimeBehavior=convertToNull", Config_obj.get("Root User").toString(), Utils.decrypt(Config_obj.get("Root Password").toString()));
     }
 
     public UI_generator(String JSON, HashMap<String, String> data) {
@@ -63,6 +190,7 @@ public class UI_generator extends JFrame {
         int height = obj.getInt("height") + 0;
         boolean packed = obj.getBoolean("packed");
         String caption = obj.getString("text");
+        Config_obj = new JSONUI_File(obj.getString("config")).getJSON_Object();
         setTitle(caption);
         setSize(width + 16, height + 39);
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -133,6 +261,7 @@ public class UI_generator extends JFrame {
             } else if (type_ui.toLowerCase().equals("edittext")) {
                 final String text = arr.getJSONObject(i).getString("text");
                 JTextField jt = new JTextField();
+                paras.put(text.substring(1), "");
                 jt.addKeyListener(new Ke(text) {
                     public void keyReleased(java.awt.event.KeyEvent evt) {
                         JTextField jt = (JTextField) evt.getComponent();
@@ -156,16 +285,26 @@ public class UI_generator extends JFrame {
                 img.setSize(uwidth, uheight);
                 img.loadImageNOThread(new File(text));
                 img.setBounds(x, y, uwidth, uheight);
+            } else if (type_ui.toLowerCase().equals("sql_table")) {
+                String text = arr.getJSONObject(i).getString("text");
+                text = replace_paras(data, text);
+                JSONObject cols = cdata.getJSONObject("columns");
+                SQL_Table img = new SQL_Table(text, getConnection(), Utils.JSONtoHashMap(cols));
+                img.setLable(cdata.getString("lable"));
+                img.refreash();
+                jp.add(img);
+                Zindex.put(img, arr.getJSONObject(i));
+                img.setPreferredSize(new Dimension(uwidth, uheight));
+                img.setSize(uwidth, uheight);
+                img.setBounds(x, y, uwidth, uheight);
             }
         }
         if (packed) {
             pack();
         }
-
-        //pack();
-        setVisible(
-                true);
+        setVisible(true);
         new Thread(Indexing).start();
+        binds.start();
     }
 
     private Runnable Indexing = new Runnable() {
@@ -248,9 +387,24 @@ public class UI_generator extends JFrame {
             if (script.split("=").length > 1) {
                 String data = script.split("=")[1];
                 data = replace_paras(paras, data);
-                //System.out.println(paras);
-                //System.out.println(data);
                 switch (command.toLowerCase()) {
+                    case "clear":
+                        clearit(script.split("=")[1]);
+                        break;
+                    case "refreash":
+                        Refreash();
+                        break;
+                    case "val":
+                        String atrib[] = script.split("=")[1].split(",");
+                        paras.put(atrib[0].substring(1), (atrib.length > 1) ? atrib[1]:"");
+                        break;
+                    case "sql":
+                        try {
+                            iud(data);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
                     case "open":
                         JSONUI_File jf = new JSONUI_File(data);
                         UI_generator ui = new UI_generator(jf.getJSON(), paras);

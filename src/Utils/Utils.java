@@ -53,6 +53,9 @@ import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.JTextComponent;
+import jsontoui.JSONUI_File;
+import jsontoui.UI_generator;
+import org.json.JSONObject;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -61,6 +64,42 @@ import sun.misc.BASE64Encoder;
  * @author AssHunter
  */
 public class Utils {
+
+    public static HashMap<String,String> ScriptToHashMap(String scripts){
+        HashMap<String,String> ss = new HashMap<String,String>();
+        String script_lines[] = scripts.split("\n");
+        for (String script : script_lines) {
+            String command = script.split("=")[0];
+            if (script.split("=").length > 1) {
+                String data = script.split("=")[1];
+                ss.put(command, data);
+            }
+        }
+       return ss;
+    }
+    
+    public static HashMap<String, String> JSONtoHashMap(JSONObject s) {
+        HashMap<String, Object> ss = new HashMap<String, Object>(s.toMap());
+        HashMap<String, String> jo = new HashMap<String, String>();
+        for (Map.Entry<String, Object> entry : ss.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            jo.put(key, value.toString());
+        }
+        return jo;
+    }
+    
+    public static JSONObject HashMaptoJSON(HashMap<String, String> s) {
+        JSONObject jo = new JSONObject();
+        if (s != null && !s.isEmpty()) {
+            for (Map.Entry<String, String> entry : s.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                jo.put(key, value);
+            }
+        }
+        return jo;
+    }
 
     public static String SimpleEncrypt(String txt) throws Exception {
         String newtxt = txt;
@@ -118,7 +157,6 @@ public class Utils {
         r.run();
     }
 
-
     public static String showInputDialog() {
         JPasswordField pf = new JPasswordField();
         int okCxl = JOptionPane.showConfirmDialog(null, pf, "Enter Password", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -151,7 +189,6 @@ public class Utils {
         }
     }
 
-  
     public static final char[] PASSWORD = "enfldsgbnlsngdlksdsgm".toCharArray();
     public static final byte[] SALT = {
         (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
@@ -194,9 +231,6 @@ public class Utils {
         robot.keyRelease(KeyEvent.VK_CONTROL);
     }
 
- 
-
-  
     public static String executeCommand(String command) {
         StringBuffer output = new StringBuffer();
         Process p;

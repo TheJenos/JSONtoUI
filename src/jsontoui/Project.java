@@ -5,6 +5,7 @@
  */
 package jsontoui;
 
+import Utils.Utils;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
@@ -139,25 +140,25 @@ public class Project extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jButton7)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton7)
                     .addComponent(jButton5)
-                    .addComponent(jButton6)
-                    .addComponent(jButton7))
+                    .addComponent(jButton6))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -418,12 +419,12 @@ public class Project extends javax.swing.JFrame {
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)))
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(10, 10, 10)
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -433,18 +434,20 @@ public class Project extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)
-                            .addComponent(jButton4)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton1)
+                                .addComponent(jButton2)
+                                .addComponent(jButton4))
+                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -541,7 +544,10 @@ public class Project extends javax.swing.JFrame {
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
         if (UI.isNodeChild(selectedNode)) {
             FileObject fo = (FileObject) selectedNode.getUserObject();
-            UIeditor jf = new UIeditor(fo.getFile().getAbsolutePath());
+            UIeditor jf1 = new UIeditor(fo.getFile().getAbsolutePath());
+            jf1.setConfig(this.jf.getJSON_File());
+            jf1.JSONcreate();
+            jf1.SaveJSON();
         }
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -550,7 +556,7 @@ public class Project extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jTextField6KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField6KeyReleased
-        // TODO add your handling code here:
+        updateJSON();
     }//GEN-LAST:event_jTextField6KeyReleased
 
     private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
@@ -598,6 +604,14 @@ public class Project extends javax.swing.JFrame {
         }
     }
 
+    public void updateStaticVal() {
+        StaticVal.Host = jTextField1.getText();
+        StaticVal.Port = jTextField2.getText();
+        StaticVal.User = jTextField4.getText();
+        StaticVal.Pass = jTextField5.getText();
+        StaticVal.DB = jTextField6.getText();
+    }
+
     public void updateJSON() {
         try {
             String script_lines[] = jTextArea1.getText().split("\n");
@@ -622,19 +636,24 @@ public class Project extends javax.swing.JFrame {
             scrpts.put(f.toString(), f.getFile());
             dtm.nodeChanged(Scripts);
         }
-        JSONObject jo = new JSONObject();
-        jo.put("Project Name", jTextField3.getText());
-        jo.put("Static Values", sat);
-        jo.put("Type", "project");
-        jo.put("Host", jTextField1.getText());
-        jo.put("Port", jTextField2.getText());
-        jo.put("Root User", jTextField4.getText());
-        jo.put("Root Password", jTextField5.getText());
-        jo.put("DataBase Name", jTextField6.getText());
-        jo.put("Main UI", jComboBox1.getSelectedItem());
-        jo.put("UI", Uis);
-        jo.put("Scripts", scrpts);
-        jTextArea2.setText(jo.toString(4));
+        try {
+            JSONObject jo = new JSONObject();
+            jo.put("Project Name", jTextField3.getText());
+            jo.put("Static Values", sat);
+            jo.put("Type", "project");
+            jo.put("Host", jTextField1.getText());
+            jo.put("Port", jTextField2.getText());
+            jo.put("Root User", jTextField4.getText());
+            jo.put("Root Password", Utils.encrypt(jTextField5.getText()));
+            jo.put("DataBase Name", jTextField6.getText());
+            jo.put("Main UI", jComboBox1.getSelectedItem());
+            jo.put("UI", Uis);
+            jo.put("Scripts", scrpts);
+            jTextArea2.setText(jo.toString(4));
+            updateStaticVal();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void updateFromJSON() {
@@ -650,12 +669,17 @@ public class Project extends javax.swing.JFrame {
             Object value = entry.getValue();
             satics += key + "=" + value + "\n";
         }
-        jTextArea1.setText(satics);
-        jTextField1.setText(jo.get("Host").toString());
-        jTextField2.setText(jo.get("Port").toString());
-        jTextField4.setText(jo.get("Root User").toString());
-        jTextField5.setText(jo.get("Root Password").toString());
-        jTextField6.setText(jo.get("DataBase Name").toString());
+        try {
+            jTextArea1.setText(satics);
+            jTextField1.setText(jo.get("Host").toString());
+            jTextField2.setText(jo.get("Port").toString());
+            jTextField4.setText(jo.get("Root User").toString());
+            jTextField5.setText(Utils.decrypt(jo.get("Root Password").toString()));
+            jTextField6.setText(jo.get("DataBase Name").toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        updateStaticVal();
         JSONObject Uis = jo.getJSONObject("UI");
         HashMap<String, Object> m1 = (HashMap<String, Object>) Uis.toMap();
         UI.removeAllChildren();
